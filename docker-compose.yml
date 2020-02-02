@@ -2,10 +2,26 @@ version : "3.3"
 services : 
   app:
     build: .
+    container_name: "my-app"
+    environment:
+      - SERVER_PORT=8080
+      - MONGODB_URI=mongodb://mymongo:27017/mydb
+      - MONGODB_STATUS_HOST=mymongo
+      - MONGODB_STATUS_PORT=28017
     ports:
-     - "8080:80"
-  db:
-    image: mongo
-    restart: always
+      - 8080:8080
+    links:
+     - mymongo    
+    depends_on:
+      - mymongo
+  mymongo:
+    image: mongo:4.2.2
+    container_name: "mymongo"
+    volumes:
+      - ./_data:/data/db
     ports:
-      - "27017:27017"
+      - 27017:27017
+      - 28017:28017
+    command: mongod 
+    #command: ["mongod", "start"]
+    #command: --smallfiles
